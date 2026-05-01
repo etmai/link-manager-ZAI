@@ -1,0 +1,232 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+//
+// FIXED: Added @@map() on every model to match V3 snake_case table names.
+// This ensures Prisma reads from your existing V3 tables instead of
+// creating new empty PascalCase tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ AUTH & USERS ============
+
+model User {
+  username String @id
+  password String
+  role     String
+
+  salesEntries     SalesEntry[]
+  workSchedule     WorkSchedule[]
+  sampleRequests   SampleRequest[]
+  financeEntries   FinanceEntry[]
+  taskComments     TaskComment[]
+  scheduleCreatedBy WorkSchedule[] @relation("ScheduleCreator")
+
+  @@map("users")
+}
+
+// ============ CATEGORIES ============
+
+model Category {
+  name String @id
+
+  @@map("categories")
+}
+
+// ============ LINKS ============
+
+model Link {
+  id        String   @id @default(uuid())
+  url       String
+  date      String
+  categories String  @default("[]")
+  updatedAt String?
+  createdAt String
+  addedBy   String?
+  updatedBy String?
+
+  @@map("links")
+}
+
+// ============ SALES ============
+
+model SalesEntry {
+  id          String  @id @default(uuid())
+  account     String
+  merchant    String  @default("")
+  category    String  @default("")
+  fulfillment String  @default("")
+  design_id   String  @default("")
+  sku         String
+  title       String  @default("")
+  ord_id      String  @default("")
+  custom      String  @default("")
+  size        String  @default("N/A")
+  filename    String  @default("")
+  sales       Int     @default(0)
+  date        String
+  createdAt   String
+  addedBy     String  @default("")
+
+  user User? @relation(fields: [addedBy], references: [username])
+
+  @@map("sales_entries")
+}
+
+// ============ ACCOUNTS / MERCHANTS / FULFILLMENTS ============
+
+model Account {
+  id   String @id @default(uuid())
+  name String @unique
+
+  @@map("accounts")
+}
+
+model Merchant {
+  id   String @id @default(uuid())
+  name String @unique
+
+  @@map("merchants")
+}
+
+model Fulfillment {
+  id   String @id @default(uuid())
+  name String @unique
+
+  @@map("fulfillments")
+}
+
+// ============ WORK SCHEDULE ============
+
+model WorkSchedule {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  date        String
+  userId      String
+  status      String  @default("pending")
+  createdBy   String?
+  creatorRole String  @default("user")
+  createdAt   String
+  trelloCardId String?
+  categories  String  @default("[]")
+
+  user    User?          @relation(fields: [userId], references: [username])
+  creator User?          @relation("ScheduleCreator", fields: [createdBy], references: [username])
+  comments TaskComment[]
+
+  @@map("work_schedule")
+}
+
+// ============ SAMPLE REQUESTS ============
+
+model SampleRequest {
+  id          String @id @default(uuid())
+  designId    String
+  requester   String
+  requestDate String
+  status      String @default("Process")
+  productLink String @default("N/A")
+  expiryDate  String @default("N/A")
+  createdAt   String
+
+  user User? @relation(fields: [requester], references: [username])
+
+  @@map("sample_requests")
+}
+
+// ============ FINANCE ============
+
+model FinanceEntry {
+  id               String  @id @default(uuid())
+  date             String
+  fulfillment_cost Float   @default(0)
+  fulfillment_note String  @default("")
+  other_cost       Float   @default(0)
+  other_note       String  @default("")
+  payment          Float   @default(0)
+  payment_note     String  @default("")
+  createdAt        String
+  addedBy          String  @default("")
+
+  user User? @relation(fields: [addedBy], references: [username])
+
+  @@map("finance_entries")
+}
+
+// ============ TASK COMMENTS ============
+
+model TaskComment {
+  id        String @id @default(uuid())
+  taskId    String
+  username  String
+  content   String
+  createdAt String
+
+  task   WorkSchedule @relation(fields: [taskId], references: [id])
+  user   User?        @relation(fields: [username], references: [username])
+
+  @@map("task_comments")
+}
+
+// ============ USA HOLIDAYS ============
+
+model UsaHoliday {
+  id            String @id @default(uuid())
+  name          String
+  date          String
+  days_left     Int?
+  priority_group String?
+  updatedAt     String
+
+  @@map("usa_holidays")
+}
+
+// ============ TRENDING KEYWORDS ============
+
+model TrendingKeyword {
+  id              String  @id @default(uuid())
+  keyword         String  @unique
+  heat_score      Int     @default(50)
+  category        String  @default("general")
+  ai_summary      String?
+  search_url_etsy String?
+  search_url_amazon String?
+  search_url_pinterest String?
+  is_pinned       Int     @default(0)
+  source          String  @default("google_trends")
+  fetched_at      String?
+
+  @@map("trending_keywords")
+}
+
+// ============ POD HOLIDAYS ============
+
+model PodHoliday {
+  id         Int    @id @default(autoincrement())
+  name       String
+  date       String
+  heat_score Int    @default(50)
+  prep_start String?
+  emoji      String @default("")
+
+  @@map("pod_holidays")
+}
+
+// ============ EVERGREEN KEYWORDS ============
+
+model EvergreenKeyword {
+  id        String  @id @default(uuid())
+  keyword   String  @unique
+  category  String?
+  source    String  @default("google_sheet")
+  createdAt String?
+
+  @@map("evergreen_keywords")
+}
