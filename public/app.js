@@ -3852,6 +3852,28 @@ async function handleRefreshTrends() {
         if (btn) { btn.disabled = false; btn.textContent = '🔄 Refresh'; }
     }
 }
+// Thêm vào phần khởi tạo
+document.getElementById('btn-theme-toggle')?.addEventListener('click', function() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  
+  // Lưu preference
+  localStorage.setItem('theme-preference', newTheme);
+  
+  // Cập nhật icon nút
+  this.innerHTML = newTheme === 'light' ? '🌓' : '☀️';
+});
+
+// Khởi tạo theme từ localStorage
+document.addEventListener('DOMContentLoaded', function() {
+  const savedTheme = localStorage.getItem('theme-preference');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('btn-theme-toggle').innerHTML = 
+      savedTheme === 'light' ? '🌓' : '☀️';
+  }
+});
 
 
 
