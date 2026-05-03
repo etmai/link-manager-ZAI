@@ -2189,6 +2189,14 @@ function renderSalesChart() {
 // ====== SALES EVENT LISTENERS SETUP ======
 function setupSalesListeners() {
     document.getElementById('btn-scan-sku').addEventListener('click', handleScanSku);
+    function handleScanSku() {
+  // Thử focus vào input SKU để cho phép nhập手动 hoặc sử dụng thiết bị quét
+  const skuInput = document.getElementById('sales-sku');
+  skuInput.focus();
+  skuInput.select();
+  showInfo('Vui lòng nhập SKU thủ công hoặc sử dụng thiết bị quét barcode');
+}
+
     document.getElementById('sales-sku').addEventListener('keydown', e => {
         if (e.key === 'Enter') { e.preventDefault(); handleScanSku(); }
     });
