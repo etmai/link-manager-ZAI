@@ -176,3 +176,10 @@ model EvergreenKeyword {
   createdAt String?
   @@map("evergreen_keywords")
 }
+model User {
+  username    String   @id
+  password    String
+  role        String
+  themePreference String @default("dark") // Thêm dòng này
+  // ... các trườngอื่น
+}
