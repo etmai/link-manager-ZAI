@@ -108,12 +108,18 @@
                     <button id="btn-mobile-menu" class="btn-icon hidden-desktop" style="display: none; font-size: 1.2em; padding: 4px 8px;">☰</button>
                     <h2 id="topbar-title">Quản Lý Links</h2>
                 </div>
-                <div class="topbar-actions">
-                    <div class="stats" id="topbar-stats">
-                        Tổng số: <span id="total-links">0</span> link
-                    </div>
-                    <button id="btn-export-excel" class="btn-primary" style="padding: 8px 16px; margin-left: 15px;">⬇️ Xuất Excel (CSV)</button>
-                </div>
+               <div class="topbar-actions">
+  <div class="stats" id="topbar-stats">
+    Tổng số: <span id="total-links">0</span> link
+  </div>
+  <button id="btn-theme-toggle" class="btn-secondary" title="Chuyển đổi sáng/tối">
+    🌓
+  </button>
+  <button id="btn-export-excel" class="btn-primary" style="padding: 8px 16px; margin-left: 15px;">
+    ⬇️ Xuất Excel (CSV)
+  </button>
+</div>
+
             </header>
 
             <!-- ===== TAB: LINKS MANAGER ===== -->
@@ -163,16 +169,18 @@
                         </div>
                         <div class="table-container">
                             <table class="modern-table">
-                                <thead>
-                                    <tr>
-                                        <th>URL</th>
-                                        <th>Ngày Nhập</th>
-                                        <th>Người Thêm</th>
-                                        <th>Người Sửa</th>
-                                        <th>Danh Mục</th>
-                                        <th style="width: 140px;">Thiết Lập</th>
-                                    </tr>
-                                </thead>
+                               <thead>
+  <tr>
+    <th class="checkbox-col"><input type="checkbox" id="select-all-links"></th>
+    <th>URL</th>
+    <th>Ngày Nhập</th>
+    <th>Người Thêm</th>
+    <th>Người Sửa</th>
+    <th>Danh Mục</th>
+    <th style="width: 140px;">Thiết Lập</th>
+  </tr>
+</thead>
+
                                 <tbody id="links-table-body"></tbody>
                             </table>
                         </div>
@@ -1002,6 +1010,7 @@
     </div>
     <!-- Bắt buộc load JS phiên bản mới (Bypass Cache) -->
     <script src="app.js?v=16.1.0"></script>
+    
 </body>
 
 </html>
