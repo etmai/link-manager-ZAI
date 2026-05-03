@@ -2,19 +2,28 @@
 const API = {
     _token: () => localStorage.getItem('lm_token'),
 
-    async fetch(path, options = {}) {
-        const token = API._token();
-        const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+   async fetch(path, options = {}) {
+  showLoading(); // Bạn cần triển khai hàm này
+  try {
+    const token = API._token();
+    const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const res = await fetch(path, { ...options, headers });
+    const res = await fetch(path, { ...options, headers });
 
-        if (res.status === 401) { logout(); throw new Error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!'); }
+    if (res.status === 401) { 
+      logout(); 
+      throw new Error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!');
+    }
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || `Lỗi API: ${res.status}`);
-        return data;
-    },
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Lỗi API: ${res.status}`);
+    return data;
+  } finally {
+    hideLoading(); // Bạn cần triển khai hàm này
+  }
+}
+
 
     // AUTH
     async login(username, password) {
@@ -1824,6 +1833,32 @@ async function handleAddSales(e) {
         }
 
         cachedSales = await SalesAPI.getAll();
+        function renderLinksTable(links) {
+  const tbody = DOM.linksTableBody;
+  tbody.innerHTML = '';
+  
+  if (links.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <p>Chưa có link nào. Thêm link mới để bắt đầu!</p>
+          <button class="btn-primary" id="btn-add-first-link">Thêm Link Mới</button>
+        </td>
+      </tr>
+    `;
+    // Thêm event listener cho nút mới
+    document.getElementById('btn-add-first-link')?.addEventListener('click', () => {
+      // Chuyển tới tab thêm link hoặc focus vào form
+      document.querySelector('[data-tab="links-tab"]').click();
+      document.getElementById('link-urls').focus();
+    });
+    return;
+  }
+  
+  // ... phần render links thường ở đây
+}
+
         renderSalesTable();
         renderStatistics();
     } catch (err) {
