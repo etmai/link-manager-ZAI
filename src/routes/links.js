@@ -178,3 +178,20 @@ module.exports = function (Router, db) {
 
     return router;
 };
+// Xóa nhiều links
+router.delete('/batch', authenticateToken, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Danh sách ID là bắt buộc' });
+    }
+    
+    await prisma.link.deleteMany({
+      where: { id: { in: ids } }
+    });
+    
+    res.json({ message: `Đã xóa ${ids.length} link thành công` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
